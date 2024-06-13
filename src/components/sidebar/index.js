@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import React, { useEffect, useState } from 'react';
 import './sidebar.css';
 import SidebarButton from './sidebarButton';
@@ -15,22 +16,35 @@ export default function Sidebar() {
     { title: "Player", to: "/player", icon: <FaPlay /> },
     { title: "Favourites", to: "/favourites", icon: <MdFavorite /> },
     { title: "Library", to: "/", icon: <IoLibrary /> },
-    { title: "Sign Out", to: "", icon: <FaSignOutAlt /> },
+    { title: "Sign Out", onClick: handleSignOut, icon: <FaSignOutAlt /> }, // Updated for onClick event
   ];
 
   const [image, setImage] = useState("https://w7.pngwing.com/pngs/627/97/png-transparent-avatar-web-development-computer-network-avatar-game-web-design-heroes.png");
 
   useEffect(() => {
-    apiClient.get("me").then(response => {
-      if (response.data.images && response.data.images.length > 0) {
-        setImage(response.data.images[0].url);
-      } else {
-        setImage("https://w7.pngwing.com/pngs/627/97/png-transparent-avatar-web-development-computer-network-avatar-game-web-design-heroes.png");
+    // Simulate fetching user data
+    const fetchUserData = async () => {
+      try {
+        const response = await apiClient.get("me");
+        if (response.data.images && response.data.images.length > 0) {
+          setImage(response.data.images[0].url);
+        } else {
+          setImage("https://w7.pngwing.com/pngs/627/97/png-transparent-avatar-web-development-computer-network-avatar-game-web-design-heroes.png");
+        }
+      } catch (error) {
+        console.error("Error fetching user data: ", error);
       }
-    }).catch(error => {
-      console.error("Error fetching user data: ", error);
-    });
+    };
+
+    fetchUserData();
   }, []);
+
+  const handleSignOut = () => {
+    // Clear token or perform sign-out logic here
+    localStorage.removeItem('spotifyAuthToken'); // Remove the token from local storage
+    // Redirect to login page (replace with your actual login page route)
+    window.location.href = '/login'; // Redirect using JavaScript
+  };
 
   return (
     <div className='sidebar-container'>
@@ -51,7 +65,7 @@ export default function Sidebar() {
       </div>
       <SidebarButton 
         title={buttons[buttons.length - 1].title} 
-        to={buttons[buttons.length - 1].to} 
+        onClick={buttons[buttons.length - 1].onClick} // Pass onClick handler
         icon={buttons[buttons.length - 1].icon} 
       />
     </div>
